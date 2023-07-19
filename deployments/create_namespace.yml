@@ -2,16 +2,16 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dev-lo-wpk
+  name: dev-ns-app
   labels:
-    app: lo-wpk
+    app: dev-app
     env: dev
 ---
 apiVersion: v1
 kind: ResourceQuota
 metadata:
-  name: dev-wpk-qouta
-  namespace: dev-lo-wpk
+  name: dev-app-qouta
+  namespace: dev-ns-app
 spec:
   hard:
     limits.cpu: "10"
