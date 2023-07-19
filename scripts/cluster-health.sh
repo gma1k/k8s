@@ -1,5 +1,6 @@
-# Script to check the health status of the cluster and report the objects and resources
 #!/bin/bash
+
+# Script to check the health status of the cluster and report the objects and resources
 
 # Colors
 RED='\033[0;31m'
