@@ -31,7 +31,7 @@ Can be executed directly from the command line.
 ```
 git clone https://github.com/gma1k/k8s.git
 cd k8s
-````
+```
 
 ## License
 
