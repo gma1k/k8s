@@ -71,7 +71,7 @@ print_join_command() {
   echo "kubeadm join $ENDPOINT --token $TOKEN --discovery-token-ca-cert-hash sha256:$HASH"
 }
 
-# Run the functions to install k8s with cilium, podman, prometheus-grafana, keda and vault
+# Run the functions to install k8s with cilium, podman, prometheus, keda and vault
 install_k8s
 install_podman
 install_cilium
