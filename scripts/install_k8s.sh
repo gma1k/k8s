@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# A sudo check
+check_sudo() {
+  if [ [ "$(id -u)" -ne 0 ]]; then
+    echo "Please run this script with sudo privileges."
+    exit 1
+  fi
+}
+
 # Install Kubernetes
 install_k8s() {
   echo "Installing Kubernetes..."
