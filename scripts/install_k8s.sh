@@ -21,9 +21,9 @@ cgroup_manager = "systemd"
 EOF
 }
 
-# Install and configure Cilium as network plugin
+# Install Cilium as network plugin
 install_cilium() {
-  echo "Installing and configuring Cilium..."
+  echo "Installing Cilium..."
   curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
   sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
   sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
@@ -31,13 +31,12 @@ install_cilium() {
   cilium install --version v1.14.2 --wait=false
 }
 
-# Install and configure Helm 
+# Install Helm 
 install_helm() {
     echo "Installing and configuring Helm..."
     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 
     chmod +x get_helm.sh 
     ./get_helm.sh 
-    helm version 
 }
 
 # Install Prometheus
