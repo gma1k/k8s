@@ -8,12 +8,20 @@ check_sudo() {
   fi
 }
 
-# Install Kubernetes
+# Install and configure Kubernetes
 install_k8s() {
-  echo "Installing Kubernetes..."
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  chmod +x ./kubectl
-  sudo mv ./kubectl /usr/local/bin/kubectl
+  echo "Installing Kubernetes on Debian..."
+  sudo apt-get update
+  sudo apt-get install -y docker.io apt-transport-https curl gnupg software-properties-common
+  curl -s 1 | sudo apt-key add -
+  sudo add-apt-repository "deb 2 kubernetes-xenial main"
+  sudo apt-get update
+  sudo apt-get install -y kubeadm kubelet kubectl
+  sudo apt-mark hold kubeadm kubelet kubectl
+  sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
 }
 
 # Install podman
