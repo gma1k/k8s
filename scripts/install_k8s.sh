@@ -40,6 +40,16 @@ install_k8s() {
   sudo systemctl restart kubelet
 }
 
+# Install Cilium as network plugin
+install_cilium() {
+  echo "Installing Cilium..."
+  curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
+  sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
+  sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
+  rm cilium-linux-amd64.tar.gz{,.sha256sum}
+  cilium install --version v1.14.2 --wait=false
+}
+
 # Install podman
 install_podman() {
   echo "Installing podman..."
@@ -50,16 +60,6 @@ install_podman() {
 [containers]
 cgroup_manager = "systemd"
 EOF
-}
-
-# Install Cilium as network plugin
-install_cilium() {
-  echo "Installing Cilium..."
-  curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
-  sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
-  sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
-  rm cilium-linux-amd64.tar.gz{,.sha256sum}
-  cilium install --version v1.14.2 --wait=false
 }
 
 # Install Helm 
@@ -105,8 +105,8 @@ print_join_command() {
 # Run the functions to install k8s with cilium, podman, prometheus, keda and vault
 disable_swap
 install_k8s
-install_podman
 install_cilium
+install_podman
 install_helm
 install_prometheus
 install_keda
