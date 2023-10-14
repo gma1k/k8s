@@ -8,6 +8,20 @@ check_sudo() {
   fi
 }
 
+# Disable swap
+disable_swap() {
+  if [ -n "$(swapon --show)" ]; then
+    echo "Disabling swap..."
+    sudo swapoff -a
+    echo "Commenting out the swap entry in /etc/fstab..."
+    sudo sed -i '/ swap / s/^/#/' /etc/fstab
+    echo "Swap is disabled."
+    free -m
+  else
+    echo "Swap is already disabled."
+  fi
+}
+
 # Install and configure Kubernetes
 install_k8s() {
   echo "Installing Kubernetes on Debian..."
@@ -22,6 +36,8 @@ install_k8s() {
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  sudo systemctl daemon-reload
+  sudo systemctl restart kubelet
 }
 
 # Install podman
@@ -87,6 +103,7 @@ print_join_command() {
 }
 
 # Run the functions to install k8s with cilium, podman, prometheus, keda and vault
+disable_swap
 install_k8s
 install_podman
 install_cilium
