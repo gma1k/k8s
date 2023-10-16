@@ -73,7 +73,7 @@ install_k8s() {
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
 }
 
-# Install Cilium as network plugin
+# Install Cilium as CNI
 install_cilium() {
   echo "Installing Cilium..."
   curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
