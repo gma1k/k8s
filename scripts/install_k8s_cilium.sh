@@ -65,9 +65,9 @@ EOF
 install_k8s() {
   echo "Installing Kubernetes..."
   sudo apt-get update
-  sudo apt-get install -y kubelet kubeadm kubectl
+  sudo apt-get install -y kubelet=1.27.0-00 kubeadm=1.27.0-00 kubectl=1.27.0-00
   sudo apt-mark hold kubeadm kubelet kubectl
-  sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+  sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=1.27.0
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
