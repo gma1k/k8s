@@ -31,7 +31,7 @@ drain_node() {
     sudo kubectl drain "$NODE_NAME" --ignore-daemonsets
 }
 
-# Function to upgrade kubeadm, kubelet, and kubectl
+# Upgrade Kubernetes
 upgrade_node() {
     echo "Upgrading kubeadm, kubelet, and kubectl..."
     sudo apt-mark unhold kubeadm kubelet kubectl && \
@@ -45,7 +45,7 @@ upgrade_node() {
     sudo kubeadm version
 }
 
-# Function to uncordon the node
+# Uncordon the node
 uncordon_node() {
     NODE_NAME="$1"
     echo "Bringing the node back online by marking it schedulable..."
