@@ -75,7 +75,14 @@ install_k8s() {
 
 # Install Calico as CNI
 install_calico() {
-  kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+  local calico_manifest_url="https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml"
+  echo "Installing Calico..."
+  if kubectl apply -f "$calico_manifest_url"; then
+    echo "Calico CNI installed successfully!"
+  else
+    echo "Error: Failed to install Calico CNI."
+    exit 1
+  fi
 }
 
 # Print the join command of worker nodes
