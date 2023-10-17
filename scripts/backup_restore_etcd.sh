@@ -39,7 +39,7 @@ perform_restore() {
     echo "Restore completed successfully."
 }
 
-# Prompt preform a action
+# Prompt to preform a action
 echo "Choose an action:"
 echo "1. Backup"
 echo "2. Restore"
