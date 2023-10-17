@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: iperf3-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: iperf3
+  template:
+    metadata:
+      labels:
+        app: iperf3
+    spec:
+      containers:
+        - name: iperf3
+          image: leodotcloud/swiss-army-knife
+          ports:
+            - containerPort: 5201
