@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-diagnostic
+spec:
+  containers:
+  - name: app-diagnostic
+    image: acgorg/app-diagnostic:1
+    ports:
+    - containerPort: 80
