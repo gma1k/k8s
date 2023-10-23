@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-data
+  namespace: dev-ns
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: auth-data
+  template:
+    metadata:
+      labels:
+        app: auth-data
+    spec:
+      nodeSelector:
+        external-auth-services: "true"
+      containers:
+      - name: nginx
+        image: nginx:1.19.1
+        ports:
+        - containerPort: 80
