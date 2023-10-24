@@ -1,0 +1,12 @@
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: user-db-svc 
+spec: 
+  type: ClusterIP 
+  selector: 
+    app: user-db 
+  ports: 
+  - protocol: TCP 
+    port: 80 
+    targetPort: 80
