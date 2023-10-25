@@ -4,13 +4,13 @@ metadata:
    name: pv-pod
 spec:
    containers:
-      - name: busybox
-        image: busybox
-        command: ['sh', '-c', 'while true; do echo Success! > /output/success.txt; sleep 5; done']
+   - name: busybox
+     image: busybox
+     command: ['sh', '-c', 'while true; do echo Success! > /output/success.txt; sleep 5; done']
    volumes:
-      - name: pv-storage
-        persistentVolumeClaim:
-          claimName: host-pvc
+   - name: pv-storage
+     persistentVolumeClaim:
+       claimName: host-pvc
    volumeMounts:
-      - name: pv-storage
-        mountPath: /output
+   - name: pv-storage
+     mountPath: /output
