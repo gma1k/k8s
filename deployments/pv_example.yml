@@ -1,0 +1,13 @@
+kind: PersistentVolume 
+apiVersion: v1 
+metadata: 
+   name: host-pv 
+spec: 
+   storageClassName: localdisk
+   persistentVolumeReclaimPolicy: Recycle 
+   capacity: 
+      storage: 1Gi 
+   accessModes: 
+      - ReadWriteOnce 
+   hostPath: 
+      path: /var/output
