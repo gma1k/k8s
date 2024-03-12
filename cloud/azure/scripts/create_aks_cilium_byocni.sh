@@ -59,10 +59,6 @@ install_cilium() {
         --set hubble.enabled=true
 }
 
-# Get API server IP and port
-api_server_ip=$(kubectl config view -o jsonpath='{"Cluster name\tServer\n"}{range .clusters[*]}{.name}{"\t"}{.cluster.server}{"\n"}{end}' | cut -d':' -f2 | cut -d'/' -f3)
-api_server_port=$(kubectl config view -o jsonpath='{"Cluster name\tServer\n"}{range .clusters[*]}{.name}{"\t"}{.cluster.server}{"\n"}{end}' | cut -d':' -f3)
-
 # Main script
 add_aks_extension
 register_aks_feature
@@ -82,6 +78,11 @@ create_virtual_network "$resource_group" "$vnet_name" "$subnet_name"
 create_aks_cluster "$resource_group" "$cluster_name" "$vnet_name" "$subnet_name"
 install_helm
 configure_helm
+
+# Get API server IP and port
+api_server_ip=$(kubectl config view -o jsonpath='{"Cluster name\tServer\n"}{range .clusters[*]}{.name}{"\t"}{.cluster.server}{"\n"}{end}' | cut -d':' -f2 | cut -d'/' -f3)
+api_server_port=$(kubectl config view -o jsonpath='{"Cluster name\tServer\n"}{range .clusters[*]}{.name}{"\t"}{.cluster.server}{"\n"}{end}' | cut -d':' -f3)
+
 install_cilium "$api_server_ip" "$api_server_port"
 
 echo "AKS cluster with Cilium CNI has been set up successfully!"
