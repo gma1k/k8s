@@ -59,6 +59,3 @@ main_menu() {
         *) echo "Invalid choice. Please select 1, 2, or 3." ;;
     esac
 }
-
-# Run the main menu
-main_menu
