@@ -7,13 +7,13 @@ check_azure_cli_version() {
 
     if [[ "$(printf '%s\n' "$required_version" "$installed_version" | sort -V | head -n1)" != "$required_version" ]]; then
         echo "Azure CLI version $required_version or later is required."
-        read -p "Do you want to install/update Azure CLI? (y/n): " upgrade_choice
+        read -p "Do you want to update Azure CLI? (y/n): " upgrade_choice
         if [[ "$upgrade_choice" == [Yy]* ]]; then
-            echo "Installing/updating Azure CLI..."
+            echo "Updating Azure CLI..."
             az upgrade --yes
-            echo "Azure CLI has been installed/updated."
+            echo "Azure CLI has been updated."
         else
-            echo "Please install/update Azure CLI manually and then run this script again."
+            echo "Please update Azure CLI manually and then run this script again."
             exit 1
         fi
     fi
