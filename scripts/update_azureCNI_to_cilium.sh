@@ -40,8 +40,13 @@ update_cluster_to_cilium() {
     validate_cluster_and_resource_group "$cluster_name" "$resource_group"
 
     # Update the Azure CNI to use Cilium dataplane
-    az aks update -n "$cluster_name" -g "$resource_group" --network-dataplane cilium
-    echo "The Azure CNI on '$cluster_name' has been updated to use Cilium dataplane."
+    if az aks update -n "$cluster_name" -g "$resource_group" --network-dataplane cilium; then
+        echo "The Azure CNI on '$cluster_name' has been updated to use Cilium dataplane."
+    else
+        exit_code=$?
+        echo "Failed to update the Azure CNI on '$cluster_name'. Exit code: $exit_code"
+        exit $exit_code
+    fi
 }
 
 # Main menu
