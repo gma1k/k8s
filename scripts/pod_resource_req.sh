@@ -1,27 +1,30 @@
 #!/bin/bash
 
-pods_with_resource_requests=""
-pods_without_resource_requests=""
+# Check if resource requests are defined for a pod
+has_resource_requests() {
+    local pod="$1"
+    local namespace="$2"
+    kubectl get pods "$pod" -n "$namespace" -o jsonpath='{.spec.containers[0].resources.requests}' >/dev/null 2>&1
+}
 
-for namespace in `kubectl get namespaces | grep -v NAME | cut -d ' ' -f 1` ; do
-  for pod in `kubectl get pods -n $namespace | grep -v NAME | cut -d ' ' -f 1` ; do
-        request_check=`kubectl get pods $pod -n $namespace -o yaml | grep requests`
-        if [ ! -z "$requests_check" ]; then
-           pods_with_resource_requests="$pods_with_resource_requests\n$pod,$namespace"
+declare -a pods_with_resource_requests
+declare -a pods_without_resource_requests
+
+# Fetch all namespaces
+while read -r namespace; do
+    while read -r pod; do
+        if has_resource_requests "$pod" "$namespace"; then
+            pods_with_resource_requests+=("$pod,$namespace")
         else
-           pods_without_resource_requests="$pods_without_resource_requests\n$pod,$namespace"
+            pods_without_resource_requests+=("$pod,$namespace")
         fi
-  done
-done
+    done < <(kubectl get pods -n "$namespace" -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')
+done < <(kubectl get namespaces -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')
 
 echo "Pods With Resource Requests"
-echo $pods_with_resource_requests
+printf '%s\n' "${pods_with_resource_requests[@]}"
 
-echo ""
-echo ""
-echo "========="
-echo ""
-echo ""
+echo -e "\n=========\n"
 
 echo "Pods Without Resource Requests"
-echo $pods_without_resource_requests
+printf '%s\n' "${pods_without_resource_requests[@]}"
