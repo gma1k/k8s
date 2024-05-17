@@ -4,6 +4,7 @@
 # Example 1: ./kubectl_list_containers_images.sh -t 1
 # Example 2: ./kubectl_list_containers_images.sh to list availble tasks
 # Reference: https://kubernetes.io/docs/tasks/access-application-cluster/list-all-running-container-images/
+set -euf -o pipefail
 
 usage() {
   echo "Usage: $0 [-t task]"
