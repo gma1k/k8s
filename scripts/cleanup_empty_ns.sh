@@ -14,7 +14,7 @@ list_empty_namespaces() {
 delete_empty_namespaces() {
     echo "Choose an option:"
     echo "1. Delete all empty namespaces"
-    echo "2. Delete specific empty namespaces (comma-separated list)"
+    echo "2. Delete specific empty namespaces"
     read -p "Enter your choice: " choice
 
     case "$choice" in
