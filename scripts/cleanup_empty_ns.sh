@@ -19,20 +19,14 @@ delete_empty_namespaces() {
 
     case "$choice" in
         1)
-            deleted_namespaces=()
-            failed_namespaces=()
             kubectl get ns --no-headers -o custom-columns=":metadata.name" | while read -r namespace; do
                 if kubectl get all -n "$namespace" 2>&1 | grep -q "No"; then
-                    if kubectl delete namespace "$namespace" 2>&1; then
-                        deleted_namespaces+=("$namespace")
-                    else
-                        failed_namespaces+=("$namespace")
-                    fi
+                    kubectl delete namespace "$namespace"
                 fi
             done
             ;;
         2)
-           read -p "Enter namespaces to delete (comma-separated): " namespaces
+            read -p "Enter namespaces to delete (comma-separated): " namespaces
             IFS=',' read -ra ns_array <<< "$namespaces"
             for ns in "${ns_array[@]}"; do
                 kubectl delete namespace "$ns"
