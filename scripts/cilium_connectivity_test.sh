@@ -37,23 +37,18 @@ test_specific_connectivity() {
   fi
 }
 
-# Parse options
-while getopts ":a:t:" opt; do
-  case $opt in
-    a | --all)
-      test_all_connectivity
-      exit 0
-      ;;
-    t | --test)
-      test_specific_connectivity
-      exit 0
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG"
-      exit 1
-      ;;
-  esac
-done
+# Options menus
+echo "Select an option:"
+echo "  1) Test all connectivities"
+echo "  2) Test specific connectivity"
+read -r choice
 
-# No options provided, default to testing all connectivities
-test_all_connectivity
+# Process user choice
+if [[ $choice -eq 1 ]]; then
+  test_all_connectivity
+elif [[ $choice -eq 2 ]]; then
+  test_specific_connectivity
+else
+  echo "Invalid choice. Please enter 1 or 2."
+  exit 1
+fi
