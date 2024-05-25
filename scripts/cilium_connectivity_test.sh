@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euf -o pipefail
 
 # Test all connectivities
 test_all_connectivity() {
