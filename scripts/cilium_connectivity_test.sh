@@ -17,7 +17,12 @@ test_all_connectivity() {
 
 # Test specific connectivity
 test_specific_connectivity() {
-  local test_name="$1"
+  echo "Enter the name of the specific connectivity test: "
+  read -r test_name
+  if [[ -z "$test_name" ]]; then
+    echo "Error: Please enter a valid test name."
+    exit 1
+  fi
   echo "Testing connectivity for '$test_name'..."
   cilium connectivity test --test "$test_name"
   echo "** Results: **"
@@ -39,12 +44,7 @@ while getopts ":a:t:" opt; do
       exit 0
       ;;
     t | --test)
-      test_name="$OPTARG"
-      if [[ -z "$test_name" ]]; then
-        echo "Error: Please provide a test name with -t option."
-        exit 1
-      fi
-      test_specific_connectivity "$test_name"
+      test_specific_connectivity
       exit 0
       ;;
     \?)
