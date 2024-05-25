@@ -37,7 +37,7 @@ test_specific_connectivity() {
   fi
 }
 
-# Options menus
+# Menu options
 echo "Select an option:"
 echo "  1) Test all connectivities"
 echo "  2) Test specific connectivity"
