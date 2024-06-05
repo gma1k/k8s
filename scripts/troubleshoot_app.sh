@@ -8,7 +8,7 @@ check_arguments() {
     fi
 }
 
-# Display the usage information
+# Display usage information
 print_usage() {
     echo "Usage: $0 <application_name> <namespace>"
 }
