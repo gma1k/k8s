@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # Check service principal expiration date
 check_sp_expiration() {
     echo "Checking service principal expiration date..."
