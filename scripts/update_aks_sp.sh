@@ -22,17 +22,6 @@ check_sp_expiration() {
 # Reset service principal credentials
 reset_sp_and_update_aks() {
     echo "Resetting expired service principal credentials..."
-
-    if [ -z "$SP_ID" ]; then
-        echo "Error: SP_ID is not set. Please ensure it is properly initialized."
-        exit 1
-    fi
-
-    if [ -z "$SP_SECRET" ]; then
-        echo "Error: SP_SECRET is not set. Please ensure it is properly initialized."
-        exit 1
-    fi
-
     SP_SECRET=$(az ad app credential reset --id "$SP_ID" --query password -o tsv)
     az ad sp credential reset --id "$SP_ID" --password "$SP_SECRET"
 }
