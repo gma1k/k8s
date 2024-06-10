@@ -5,8 +5,16 @@ set -eu
 # Check service principal expiration date
 check_sp_expiration() {
     echo "Checking service principal expiration date..."
-    read -p "Enter the AKS cluster name: " AKS_NAME
-    read -p "Enter the resource group name: " RG_NAME
+    until [ -n "$AKS_NAME" ]; do
+        read -p "Enter AKS cluster name: " AKS_NAME
+        [ -z "$AKS_NAME" ] && echo "AKS cluster name cannot be empty. Please enter a valid name."
+    done
+
+    until [ -n "$RG_NAME" ]; do
+        read -p "Enter the resource group name: " RG_NAME
+        [ -z "$RG_NAME" ] && echo "Resource group name cannot be empty. Please enter a valid name."
+    done
+
     SP_ID=$(az aks show --resource-group "$RG_NAME" --name "$AKS_NAME" --query servicePrincipalProfile.clientId --output tsv)
     az ad app credential list --id "$SP_ID" --query "[].endDateTime" --output tsv
 }
@@ -14,6 +22,17 @@ check_sp_expiration() {
 # Reset service principal credentials
 reset_sp_and_update_aks() {
     echo "Resetting expired service principal credentials..."
+
+    if [ -z "$SP_ID" ]; then
+        echo "Error: SP_ID is not set. Please ensure it is properly initialized."
+        exit 1
+    fi
+
+    if [ -z "$SP_SECRET" ]; then
+        echo "Error: SP_SECRET is not set. Please ensure it is properly initialized."
+        exit 1
+    fi
+
     SP_SECRET=$(az ad app credential reset --id "$SP_ID" --query password -o tsv)
     az ad sp credential reset --id "$SP_ID" --password "$SP_SECRET"
 }
