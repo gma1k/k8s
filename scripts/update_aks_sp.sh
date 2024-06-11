@@ -20,7 +20,7 @@ check_sp_expiration() {
 }
 
 # Reset service principal credentials
-reset_sp_and_update_aks() {
+reset_sp() {
     echo "Resetting expired service principal credentials..."
     SP_SECRET=$(az ad app credential reset --id "$SP_ID" --query password -o tsv)
     az ad sp credential reset --id "$SP_ID" --password "$SP_SECRET"
@@ -36,7 +36,7 @@ while true; do
 
     case "$choice" in
         1) check_sp_expiration ;;
-        2) reset_sp_and_update_aks ;;
+        2) reset_sp ;;
         3) echo "Exiting. Goodbye!" && exit ;;
         *) echo "Invalid choice. Please select 1, 2, or 3." ;;
     esac
