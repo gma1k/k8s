@@ -17,9 +17,3 @@ remove_dangling_images() {
         echo "No dangling images found."
     fi
 }
-
-# Main script
-main() {
-    local dangling_images=$(list_dangling_images)
-    remove_dangling_images "$dangling_images"
-}
