@@ -2,8 +2,8 @@
 
 # This script lists Kubernetes Secrets currently in use by pods in a specified namespace.
 # Usage:
-#   ./script.sh
-#   ./script.sh -t <namespace>
+#   ./list_k8s_secrets.sh
+#   ./list_k8s_secrets.sh -t <namespace>
 
 set -eu 
 
