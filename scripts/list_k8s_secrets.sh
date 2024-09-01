@@ -12,7 +12,7 @@ list_namespaces() {
     kubectl get namespaces -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | nl
 }
 
-# List secrets in use by pods in a given namespace, along with pod names
+# List secrets in use by pods in a given namespace
 list_secrets_with_pods() {
     local namespace=$1
     pods=$(kubectl get pods -n "$namespace" -o json)
