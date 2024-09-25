@@ -1,4 +1,7 @@
 #!/bin/bash
+# Usage: ./upgrade_k8s.sh <node_name>
+
+set -eu
 
 # Prompt for yes/no confirmation
 ask_yes_or_no() {
@@ -52,7 +55,7 @@ uncordon_node() {
     kubectl uncordon "$NODE_NAME"
 }
 
-# Usage: ./upgrade_k8s.sh <node_name>
+# Main script
 main() {
     NODE_NAME="$1"
     drain_node "$NODE_NAME"
