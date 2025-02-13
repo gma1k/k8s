@@ -22,7 +22,7 @@ top_nodes() {
 
 # Main menu
 echo "Choose an option:"
-echo "1. List Kubernetes namespaces"
+echo "1. List namespaces"
 echo "2. Display top pods for a namespace"
 echo "3. Display top nodes"
 
