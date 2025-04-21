@@ -1,6 +1,6 @@
 #!/bin/bash
+set -eu 
 
-# Check Azure CLI version
 check_azure_cli_version() {
     local required_version="2.52.0"
     local installed_version=$(az --version | grep -oE '([0-9]+\.[0-9]+\.[0-9]+)')
@@ -19,27 +19,22 @@ check_azure_cli_version() {
     fi
 }
 
-# Validate AKS cluster and resource group
 validate_cluster_and_resource_group() {
     local cluster_name="$1"
     local resource_group="$2"
 
-    # Check if cluster exists
     if ! az aks show -n "$cluster_name" -g "$resource_group" &>/dev/null; then
         echo "Error: Cluster '$cluster_name' in resource group '$resource_group' not found."
         exit 1
     fi
 }
 
-# Update existing AKS cluster to use Cilium dataplane
 update_cluster_to_cilium() {
     read -p "Enter your AKS cluster name: " cluster_name
     read -p "Enter the resource group name where the cluster is located: " resource_group
 
-    # Validate cluster and resource group
     validate_cluster_and_resource_group "$cluster_name" "$resource_group"
 
-    # Update the Azure CNI to use Cilium dataplane
     if az aks update -n "$cluster_name" -g "$resource_group" --network-dataplane cilium; then
         echo "The Azure CNI on '$cluster_name' has been updated to use Cilium dataplane."
     else
@@ -49,7 +44,6 @@ update_cluster_to_cilium() {
     fi
 }
 
-# Main menu
 main_menu() {
     echo "=== AKS Cluster Update Script ==="
     echo "1. Check Azure CLI version"
