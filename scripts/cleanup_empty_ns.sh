@@ -1,7 +1,6 @@
 #!/bin/bash
-set -euf -o pipefail
+set -eu
 
-# List empty namespaces
 list_empty_namespaces() {
     kubectl get ns --no-headers -o custom-columns=":metadata.name" | while read -r namespace; do
         if kubectl get all -n "$namespace" 2>&1 | grep -q "No"; then
@@ -10,7 +9,6 @@ list_empty_namespaces() {
     done
 }
 
-# Delete empty namespaces
 delete_empty_namespaces() {
     echo "Choose an option:"
     echo "1. Delete all empty namespaces"
@@ -38,7 +36,6 @@ delete_empty_namespaces() {
     esac
 }
 
-# Main menu
 echo "Options Menu:"
 echo "1. List empty namespaces"
 echo "2. Delete empty namespaces"
