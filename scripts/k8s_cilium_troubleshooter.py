@@ -37,7 +37,7 @@ def cilium_health():
 
 @app.command()
 def pod_ping(source_ns: str, source_pod: str, target_ip: str):
-    """Ping from one pod to another using kubectl exec."""
+    """Ping from one pod to another."""
     console.rule("[bold cyan] Pod-to-Pod Connectivity Test")
     cmd = f"kubectl exec -n {source_ns} {source_pod} -- ping -c 3 {target_ip}"
     output = run_cmd(cmd)
