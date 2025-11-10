@@ -2,11 +2,11 @@
 
 # Usage Examples: 
 # Check Cilium agent status
-# python3 cilium_troubleshooter.py cilium-health
+# python3 k8s_cilium_troubleshooter.py cilium-health
 # Test DNS inside a pod
-# python3 cilium_troubleshooter.py dns-check --namespace test-ns --pod-name test-a
+# python3 k8s_cilium_troubleshooter.py dns-check --namespace test-ns --pod-name test-a
 # Test if policy allows access
-# python3 cilium_troubleshooter.py policy-check --namespace test-ns --source-pod test-pod-a --target-svc myapp.default.svc.cluster.local --port 80
+# python3 k8s_cilium_troubleshooter.py policy-check --namespace test-ns --source-pod test-pod-a --target-svc myapp.default.svc.cluster.local --port 80
 
 import subprocess
 import typer
