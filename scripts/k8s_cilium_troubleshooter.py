@@ -28,7 +28,7 @@ def run_cmd(cmd: str):
 def cilium_health():
     """Check the status of Cilium agents in the cluster."""
     console.rule("[bold cyan] Checking Cilium Status")
-    output = run_cmd("cilium status --wait --verbose")
+    output = run_cmd("cilium status --wait")
     if "OK" in output:
         console.print(" [green]Cilium agents are healthy[/green]")
     else:
