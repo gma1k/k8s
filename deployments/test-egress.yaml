@@ -1,0 +1,16 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-backend-egress
+  namespace: test-policy
+spec:
+  endpointSelector:
+    matchLabels:
+      app: backend
+  egress:
+  - toEntities:
+    - frontend
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
