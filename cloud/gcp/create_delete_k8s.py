@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-import os
 import subprocess
 
 def create_cluster():
   print("Please enter the following values separated by commas:")
   print("Project ID, cluster name, zone, number of nodes")
-  input = input("-> ")
+  user_input = input("-> ")
 
-  values = input.split(",")
+  values = user_input.split(",")
   if len(values) != 4:
     print("Invalid input format")
     exit(1)
@@ -26,9 +25,9 @@ def create_cluster():
 def delete_cluster():
   print("Please enter the following values separated by commas:")
   print("Project ID, cluster name, zone")
-  input = input("-> ")
+  user_input = input("-> ")
 
-  values = input.split(",")
+  values = user_input.split(",")
   if len(values) != 3:
     print("Invalid input format")
     exit(1)

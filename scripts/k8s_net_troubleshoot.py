@@ -96,7 +96,7 @@ def cmd_connectivity(args):
     src_ns, src_pod = parse_ns_name(args.source)
     dst_ns, dst_pod = parse_ns_name(args.target)
 
-    print(f"== Resolving pod IPs ==")
+    print("== Resolving pod IPs ==")
     src_ip = kube.get_pod_ip(src_ns, src_pod)
     dst_ip = kube.get_pod_ip(dst_ns, dst_pod)
     print(f"Source: {args.source} -> {src_ip}")
@@ -105,7 +105,7 @@ def cmd_connectivity(args):
         print("[FATAL] Could not resolve pod IPs, aborting.")
         return
 
-    print(f"\n== Pinging target from source pod ==")
+    print("\n== Pinging target from source pod ==")
     rc, out, err = kube.exec_in_pod(src_ns, src_pod, ["ping", "-c", "3", dst_ip])
     print(out if rc == 0 else err)
 
@@ -158,8 +158,8 @@ def cmd_trace_flow(args):
 
     base_cmd = [
         "hubble", "observe",
-        f"--from-pod", f"{src_ns}/{src_pod}",
-        f"--to-pod", f"{dst_ns}/{dst_pod}",
+        "--from-pod", f"{src_ns}/{src_pod}",
+        "--to-pod", f"{dst_ns}/{dst_pod}",
         "--last", "20",
         "--json",
     ]
@@ -178,7 +178,6 @@ def cmd_trace_flow(args):
         except json.JSONDecodeError:
             continue
         verdict = evt.get("verdict")
-        l4 = evt.get("l4", {})
         src = evt.get("source", {}).get("identity")
         dst = evt.get("destination", {}).get("identity")
         summary = evt.get("summary", "")
