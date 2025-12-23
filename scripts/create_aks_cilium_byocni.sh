@@ -2,61 +2,61 @@
 
 # Add AKS extension
 add_aks_extension() {
-    az extension add --name aks-preview
-    az extension update --name aks-preview
+	az extension add --name aks-preview
+	az extension update --name aks-preview
 }
 
 # Register AKS feature
 register_aks_feature() {
-    az feature register --namespace "Microsoft.ContainerService" --name "KubeProxyConfigurationPreview"
-    az provider register --namespace Microsoft.ContainerService
+	az feature register --namespace "Microsoft.ContainerService" --name "KubeProxyConfigurationPreview"
+	az provider register --namespace Microsoft.ContainerService
 }
 
 # Create a resource group
 create_resource_group() {
-    az group create --name "$resource_group" --location $location
+	az group create --name "$resource_group" --location $location
 }
 
 # Create a virtual network
 create_virtual_network() {
-    echo "Creating virtual network $vnet_name..."
-    az network vnet create -g "$resource_group" --location "$location" \
-        --name "$vnet_name" --address-prefixes "$vnetAddressPrefix" --subnet-name "$subnet_name" -o none
-    az network vnet subnet create -g "$resource_group" --vnet-name "$vnet_name" \
-        --name nodesubnet --address-prefixes "$nodesubnetAddressPrefix" -o none
-    az network vnet subnet create -g "$resource_group" --vnet-name "$vnet_name" \
-        --name podsubnet --address-prefixes "$podsubnetAddressPrefix" -o none
+	echo "Creating virtual network $vnet_name..."
+	az network vnet create -g "$resource_group" --location "$location" \
+		--name "$vnet_name" --address-prefixes "$vnetAddressPrefix" --subnet-name "$subnet_name" -o none
+	az network vnet subnet create -g "$resource_group" --vnet-name "$vnet_name" \
+		--name nodesubnet --address-prefixes "$nodesubnetAddressPrefix" -o none
+	az network vnet subnet create -g "$resource_group" --vnet-name "$vnet_name" \
+		--name podsubnet --address-prefixes "$podsubnetAddressPrefix" -o none
 }
 
 # Create an AKS cluster
 create_aks_cluster() {
-    az aks create --resource-group "$resource_group" --name "$cluster_name" --location "$location" --network-plugin none --vnet-subnet-id "/subscriptions/$subscriptionId/resourceGroups/$resource_group/providers/Microsoft.Network/virtualNetworks/$vnet_name/subnets/$subnet_name"
+	az aks create --resource-group "$resource_group" --name "$cluster_name" --location "$location" --network-plugin none --vnet-subnet-id "/subscriptions/$subscriptionId/resourceGroups/$resource_group/providers/Microsoft.Network/virtualNetworks/$vnet_name/subnets/$subnet_name"
 }
 
 # Install Helm
 install_helm() {
-    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-    chmod +x get_helm.sh
-    ./get_helm.sh
+	curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+	chmod +x get_helm.sh
+	./get_helm.sh
 }
 
 # Configure Helm
 configure_helm() {
-    kubectl create serviceaccount tiller --namespace kube-system
-    kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-    helm init --service-account tiller
+	kubectl create serviceaccount tiller --namespace kube-system
+	kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+	helm init --service-account tiller
 }
 
 # Install Cilium
 install_cilium() {
-    helm install cilium cilium/cilium --version 1.14.0 \
-        --namespace kube-system \
-        --set kubeProxyReplacement=true \
-        --set k8sServiceHost="$api_server_ip" \
-        --set k8sServicePort="$api_server_port" \
-        --set aksbyocni.enabled=true \
-        --set nodeinit.enabled=true \
-        --set hubble.enabled=true
+	helm install cilium cilium/cilium --version 1.14.0 \
+		--namespace kube-system \
+		--set kubeProxyReplacement=true \
+		--set k8sServiceHost="$api_server_ip" \
+		--set k8sServicePort="$api_server_port" \
+		--set aksbyocni.enabled=true \
+		--set nodeinit.enabled=true \
+		--set hubble.enabled=true
 }
 
 # Main script

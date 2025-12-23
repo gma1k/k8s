@@ -1,10 +1,21 @@
 import subprocess
 import json
 import datetime as dt
+import shlex
 
 def execute_kube_command_json(command):
-    kube_command = subprocess.run(command, stdout=subprocess.PIPE, shell=True)
-    json_output = str(kube_command.stdout.decode("utf-8"))
+    # Split command safely instead of using shell=True
+    command_parts = shlex.split(command)
+    kube_command = subprocess.run(
+        command_parts,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+        shell=False
+    )
+    if kube_command.returncode != 0:
+        raise RuntimeError(f"Command failed: {command}\nError: {kube_command.stderr.decode('utf-8')}")
+    json_output = kube_command.stdout.decode("utf-8")
     json_object = json.loads(json_output)
     return json_object
 
@@ -24,12 +35,15 @@ for namespace in json_object["items"]:
     if not json_object["items"]:
         processed_namespace_count += 1
         process_end = dt.datetime.now()
-        how_long_to_finish = float(number_of_namespaces - processed_namespace_count) / (process_end - process_start).total_seconds() / 60
-        if how_long_to_finish < 1:
-            how_long_to_finish * 60
-            print(how_long_to_finish, "seconds")
+        if (process_end - process_start).total_seconds() > 0:
+            how_long_to_finish = float(number_of_namespaces - processed_namespace_count) / (process_end - process_start).total_seconds() / 60
+            if how_long_to_finish < 1:
+                how_long_to_finish = how_long_to_finish * 60
+                print(how_long_to_finish, "seconds")
+            else:
+                print(how_long_to_finish, "minutes")
         else:
-            print(how_long_to_finish, "minutes")
+            print("Calculating time remaining...")
         continue
     else:
         for pod in json_object["items"]:
@@ -64,11 +78,14 @@ for namespace in json_object["items"]:
                     }
     processed_namespace_count += 1
     process_end = dt.datetime.now()
-    how_long_to_finish = float(number_of_namespaces - processed_namespace_count) / (process_end - process_start).total_seconds() / 60
-    if how_long_to_finish < 1:
-        how_long_to_finish * 60
-        print(how_long_to_finish, "seconds")
+    if (process_end - process_start).total_seconds() > 0:
+        how_long_to_finish = float(number_of_namespaces - processed_namespace_count) / (process_end - process_start).total_seconds() / 60
+        if how_long_to_finish < 1:
+            how_long_to_finish = how_long_to_finish * 60
+            print(how_long_to_finish, "seconds")
+        else:
+            print(how_long_to_finish, "minutes")
     else:
-        print(how_long_to_finish, "minutes")
+        print("Calculating time remaining...")
 
 print(audit_report)
