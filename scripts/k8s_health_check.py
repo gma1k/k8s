@@ -39,6 +39,7 @@ except ImportError:
     COLOR_HEADER = "\033[96m"
     COLOR_RESET = "\033[0m"
 
+
 def load_kube_config() -> None:
     try:
         config.load_incluster_config()
@@ -50,18 +51,18 @@ def load_kube_config() -> None:
         config.load_kube_config()
         return
     except ConfigException as exc:
-        print(
-            f"{COLOR_FAIL}[FAIL]{COLOR_RESET} "
-            f"Could not load Kubernetes configuration: {exc}"
-        )
+        print(f"{COLOR_FAIL}[FAIL]{COLOR_RESET} " f"Could not load Kubernetes configuration: {exc}")
         sys.exit(1)
+
 
 def get_core_v1_api() -> client.CoreV1Api:
     return client.CoreV1Api()
 
+
 def list_namespaces(v1: client.CoreV1Api) -> List[str]:
     ns_list = v1.list_namespace()
     return [ns.metadata.name for ns in ns_list.items]
+
 
 def get_pods(v1: client.CoreV1Api, namespace: Optional[str]) -> List[client.V1Pod]:
     if namespace is None:
@@ -70,21 +71,23 @@ def get_pods(v1: client.CoreV1Api, namespace: Optional[str]) -> List[client.V1Po
         pods = v1.list_namespaced_pod(namespace=namespace)
     return pods.items
 
+
 def get_nodes(v1: client.CoreV1Api) -> List[client.V1Node]:
     nodes = v1.list_node()
     return nodes.items
 
-def get_events(
-    v1: client.CoreV1Api, namespace: Optional[str]
-) -> List[client.CoreV1Event]:
+
+def get_events(v1: client.CoreV1Api, namespace: Optional[str]) -> List[client.CoreV1Event]:
     if namespace is None:
         ev = v1.list_event_for_all_namespaces()
     else:
         ev = v1.list_namespaced_event(namespace=namespace)
     return ev.items
 
+
 def print_header(title: str) -> None:
     print(f"\n{COLOR_HEADER}=== {title} ==={COLOR_RESET}")
+
 
 def print_result(severity: str, message: str) -> None:
     sev = severity.upper()
@@ -98,6 +101,7 @@ def print_result(severity: str, message: str) -> None:
         color = COLOR_RESET
 
     print(f"{color}[{sev}]{COLOR_RESET} {message}")
+
 
 def check_pod_status_issues(pods: List[client.V1Pod]) -> bool:
     print_header("Pod Status Issues")
@@ -114,10 +118,7 @@ def check_pod_status_issues(pods: List[client.V1Pod]) -> bool:
         if phase in ("FAILED", "UNKNOWN"):
             issues_found = True
             fail_found = True
-            print_result(
-                "FAIL",
-                f"Pod {ns}/{name} is in phase {phase}."
-            )
+            print_result("FAIL", f"Pod {ns}/{name} is in phase {phase}.")
 
         cstatus_list = pod.status.container_statuses or []
         for cstatus in cstatus_list:
@@ -131,9 +132,7 @@ def check_pod_status_issues(pods: List[client.V1Pod]) -> bool:
                     issues_found = True
                     fail_found = True
                     print_result(
-                        "FAIL",
-                        f"Container {ns}/{name}:{cname} in state {reason} "
-                        f"({state.waiting.message or ''})"
+                        "FAIL", f"Container {ns}/{name}:{cname} in state {reason} " f"({state.waiting.message or ''})"
                     )
 
             restarts = cstatus.restart_count or 0
@@ -142,12 +141,13 @@ def check_pod_status_issues(pods: List[client.V1Pod]) -> bool:
                 print_result(
                     "WARN",
                     f"Container {ns}/{name}:{cname} has restarted {restarts} times "
-                    f"(threshold {RESTART_THRESHOLD})."
+                    f"(threshold {RESTART_THRESHOLD}).",
                 )
 
     if not issues_found:
         print_result("OK", "No problematic pod statuses found.")
     return fail_found
+
 
 def check_containers_running_as_root(pods: List[client.V1Pod]) -> bool:
     print_header("Containers Running as Root")
@@ -161,7 +161,7 @@ def check_containers_running_as_root(pods: List[client.V1Pod]) -> bool:
 
         pod_run_as_user = getattr(pod_sc, "run_as_user", None) if pod_sc else None
 
-        for container in (pod.spec.containers or []):
+        for container in pod.spec.containers or []:
             csc = container.security_context
             c_run_as_user = getattr(csc, "run_as_user", None) if csc else None
 
@@ -172,20 +172,20 @@ def check_containers_running_as_root(pods: List[client.V1Pod]) -> bool:
             if effective_run_as_user == 0:
                 issues_found = True
                 print_result(
-                    "WARN",
-                    f"Container {ns}/{name}:{container.name} is explicitly running as root (runAsUser=0)."
+                    "WARN", f"Container {ns}/{name}:{container.name} is explicitly running as root (runAsUser=0)."
                 )
             elif effective_run_as_user is None:
                 issues_found = True
                 print_result(
                     "WARN",
                     f"Container {ns}/{name}:{container.name} has no runAsUser set "
-                    f"(may default to root depending on image)."
+                    f"(may default to root depending on image).",
                 )
 
     if not issues_found:
         print_result("OK", "No containers found that obviously run as root or lack runAsUser.")
     return fail_found
+
 
 def check_missing_probes(pods: List[client.V1Pod]) -> bool:
     print_header("Missing Liveness / Readiness Probes")
@@ -196,7 +196,7 @@ def check_missing_probes(pods: List[client.V1Pod]) -> bool:
         ns = pod.metadata.namespace
         name = pod.metadata.name
 
-        for container in (pod.spec.containers or []):
+        for container in pod.spec.containers or []:
             cname = container.name
             has_liveness = container.liveness_probe is not None
             has_readiness = container.readiness_probe is not None
@@ -209,14 +209,12 @@ def check_missing_probes(pods: List[client.V1Pod]) -> bool:
                 if not has_readiness:
                     missing.append("readiness")
                 missing_str = " and ".join(missing)
-                print_result(
-                    "WARN",
-                    f"Container {ns}/{name}:{cname} is missing {missing_str} probe(s)."
-                )
+                print_result("WARN", f"Container {ns}/{name}:{cname} is missing {missing_str} probe(s).")
 
     if not issues_found:
         print_result("OK", "All containers have both liveness and readiness probes.")
     return fail_found
+
 
 def check_pods_resource_requests_limits(pods: List[client.V1Pod]) -> bool:
     print_header("Resource Requests / Limits")
@@ -227,7 +225,7 @@ def check_pods_resource_requests_limits(pods: List[client.V1Pod]) -> bool:
         ns = pod.metadata.namespace
         name = pod.metadata.name
 
-        for container in (pod.spec.containers or []):
+        for container in pod.spec.containers or []:
             cname = container.name
             res = container.resources
 
@@ -242,14 +240,12 @@ def check_pods_resource_requests_limits(pods: List[client.V1Pod]) -> bool:
                 if not limits:
                     missing.append("limits")
                 missing_str = " and ".join(missing)
-                print_result(
-                    "WARN",
-                    f"Container {ns}/{name}:{cname} has missing resource {missing_str}."
-                )
+                print_result("WARN", f"Container {ns}/{name}:{cname} has missing resource {missing_str}.")
 
     if not issues_found:
         print_result("OK", "All containers have resource requests and limits defined.")
     return fail_found
+
 
 def check_node_conditions(nodes: List[client.V1Node]) -> bool:
     print_header("Node Conditions")
@@ -261,8 +257,6 @@ def check_node_conditions(nodes: List[client.V1Node]) -> bool:
         conds = node.status.conditions or []
 
         ready_status = None
-        disk_pressure = None
-        mem_pressure = None
 
         for cond in conds:
             ctype = cond.type
@@ -273,38 +267,32 @@ def check_node_conditions(nodes: List[client.V1Node]) -> bool:
                     fail_found = True
                     print_result(
                         "FAIL",
-                        f"Node {name} is NotReady (status={cond.status}, reason={cond.reason}, message={cond.message})."
+                        f"Node {name} is NotReady (status={cond.status}, reason={cond.reason}, message={cond.message}).",
                     )
             elif ctype == "DiskPressure":
-                disk_pressure = cond.status
                 if cond.status == "True":
                     issues_found = True
                     fail_found = True
                     print_result(
-                        "FAIL",
-                        f"Node {name} has DiskPressure (reason={cond.reason}, message={cond.message})."
+                        "FAIL", f"Node {name} has DiskPressure (reason={cond.reason}, message={cond.message})."
                     )
             elif ctype == "MemoryPressure":
-                mem_pressure = cond.status
                 if cond.status == "True":
                     issues_found = True
                     fail_found = True
                     print_result(
-                        "FAIL",
-                        f"Node {name} has MemoryPressure (reason={cond.reason}, message={cond.message})."
+                        "FAIL", f"Node {name} has MemoryPressure (reason={cond.reason}, message={cond.message})."
                     )
 
         if ready_status is None:
             issues_found = True
             fail_found = True
-            print_result(
-                "FAIL",
-                f"Node {name} has no Ready condition reported."
-            )
+            print_result("FAIL", f"Node {name} has no Ready condition reported.")
 
     if not issues_found:
         print_result("OK", "All nodes are Ready with no DiskPressure or MemoryPressure.")
     return fail_found
+
 
 def _event_timestamp(ev: client.CoreV1Event) -> Optional[datetime.datetime]:
     for attr in ("event_time", "last_timestamp", "first_timestamp", "metadata"):
@@ -350,10 +338,7 @@ def check_recent_events(events: List[client.CoreV1Event]) -> bool:
         name = getattr(involved, "name", None)
         kind = getattr(involved, "kind", None)
 
-        is_failure_reason = (
-            reason in fail_reasons or
-            reason.startswith("Failed")
-        )
+        is_failure_reason = reason in fail_reasons or reason.startswith("Failed")
 
         if ev_type == "Warning" or is_failure_reason:
             issues_found = True
@@ -361,28 +346,24 @@ def check_recent_events(events: List[client.CoreV1Event]) -> bool:
             target = f"{kind} {ns}/{name}" if ns else f"{kind} {name}"
             if is_failure_reason:
                 fail_found = True
-                print_result(
-                    "FAIL",
-                    f"Recent event [{reason}] on {target}: {message}"
-                )
+                print_result("FAIL", f"Recent event [{reason}] on {target}: {message}")
             else:
-                print_result(
-                    "WARN",
-                    f"Recent warning event [{reason}] on {target}: {message}"
-                )
+                print_result("WARN", f"Recent warning event [{reason}] on {target}: {message}")
 
     if not issues_found:
         print_result("OK", f"No recent problematic events in the last {window_minutes} minutes.")
     return fail_found
 
+
 def ask_namespace_choice(v1: client.CoreV1Api) -> Tuple[Optional[str], str]:
     print_header("Namespace Selection")
 
     while True:
-        choice = input(
-            "Do you want to scan ALL namespaces or choose a specific namespace? "
-            "[all/specific]: "
-        ).strip().lower()
+        choice = (
+            input("Do you want to scan ALL namespaces or choose a specific namespace? " "[all/specific]: ")
+            .strip()
+            .lower()
+        )
 
         if choice in ("all", "a"):
             print_result("OK", "Scanning ALL namespaces.")
@@ -399,9 +380,7 @@ def ask_namespace_choice(v1: client.CoreV1Api) -> Tuple[Optional[str], str]:
                 print(f"  {idx}. {ns}")
 
             while True:
-                sel = input(
-                    "Enter the namespace number or name (or 'back' to choose again): "
-                ).strip()
+                sel = input("Enter the namespace number or name (or 'back' to choose again): ").strip()
 
                 if sel.lower() == "back":
                     break
@@ -420,13 +399,11 @@ def ask_namespace_choice(v1: client.CoreV1Api) -> Tuple[Optional[str], str]:
                     print_result("OK", f"Scanning namespace: {sel}")
                     return sel, f"namespace '{sel}'"
 
-                print_result(
-                    "WARN",
-                    "Namespace not found. Please enter a valid number or name."
-                )
+                print_result("WARN", "Namespace not found. Please enter a valid number or name.")
             continue
 
         print_result("WARN", "Please type 'all' or 'specific'.")
+
 
 def main() -> None:
     load_kube_config()
@@ -439,8 +416,9 @@ def main() -> None:
         pods = get_pods(v1, namespace)
         nodes = get_nodes(v1)
         events = get_events(v1, namespace)
-        print_result("OK", f"Fetched {len(pods)} pods, {len(nodes)} nodes, "
-                           f"and {len(events)} events from {ns_desc}.")
+        print_result(
+            "OK", f"Fetched {len(pods)} pods, {len(nodes)} nodes, " f"and {len(events)} events from {ns_desc}."
+        )
     except Exception as exc:
         print_result("FAIL", f"Error fetching data from cluster: {exc}")
         sys.exit(1)
@@ -467,17 +445,12 @@ def main() -> None:
 
     print_header("Summary")
     if any_fail:
-        print_result(
-            "FAIL",
-            "One or more FAIL-level issues were detected."
-        )
+        print_result("FAIL", "One or more FAIL-level issues were detected.")
         sys.exit(1)
     else:
-        print_result(
-            "OK",
-            "No FAIL-level issues detected. Cluster looks healthy according to these checks."
-        )
+        print_result("OK", "No FAIL-level issues detected. Cluster looks healthy according to these checks.")
         sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

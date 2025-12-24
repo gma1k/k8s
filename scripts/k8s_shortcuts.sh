@@ -1,16 +1,16 @@
 # Set up autocomplete in bash into the current shell
 source <(kubectl completion bash)
-echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
+echo "source <(kubectl completion bash)" >>~/.bashrc # add autocomplete permanently to your bash shell.
 
 # set up autocomplete in zsh into the current shell
 source <(kubectl completion zsh)
-echo '[[ $commands[kubectl] ]] && source <(kubectl completion zsh)' >> ~/.zshrc # add autocomplete permanently to your zsh shell
+echo '[[ $commands[kubectl] ]] && source <(kubectl completion zsh)' >>~/.zshrc # add autocomplete permanently to your zsh shell
 
 # kubectl plugins
 alias k=kubectl
 complete -F __start_kubectl k
 
-# Config view 
+# Config view
 alias kcv="kubectl config view"
 alias kcc="kubectl config current-context"
 alias kcu="kubectl config use-context"
@@ -73,8 +73,8 @@ alias kdd='kubectl describe deployment'
 alias kdeld='kubectl delete deployment'
 alias ksd='kubectl scale deployment'
 alias krsd='kubectl rollout status deployment'
-kres(){
-    kubectl set env $@ REFRESHED_AT=$(date +%Y%m%d%H%M%S)
+kres() {
+	kubectl set env $@ REFRESHED_AT=$(date +%Y%m%d%H%M%S)
 }
 
 # Rollout management.

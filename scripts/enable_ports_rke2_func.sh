@@ -2,23 +2,23 @@
 
 # Add TCP ports
 add_tcp_ports() {
-    local ports=("$@")
-    for port in "${ports[@]}"; do
-        sudo firewall-cmd --add-port="$port/tcp" --permanent
-    done
+	local ports=("$@")
+	for port in "${ports[@]}"; do
+		sudo firewall-cmd --add-port="$port/tcp" --permanent
+	done
 }
 
 # Add UDP ports
 add_udp_ports() {
-    local ports=("$@")
-    for port in "${ports[@]}"; do
-        sudo firewall-cmd --add-port="$port/udp" --permanent
-    done
+	local ports=("$@")
+	for port in "${ports[@]}"; do
+		sudo firewall-cmd --add-port="$port/udp" --permanent
+	done
 }
 
 # Reload the firewall rules
 reload_firewall() {
-    sudo firewall-cmd --reload
+	sudo firewall-cmd --reload
 }
 
 # Define allowed ports

@@ -38,9 +38,7 @@ from typing import Optional, List, Dict, Any
 import json
 import os
 import time
-import tempfile
 import subprocess
-import sys
 
 import yaml
 import typer
@@ -260,7 +258,6 @@ def run_tests(namespace: str = typer.Option('cilium-test', help='Namespace where
     """
     load_kube_config()
     k8s_core = client.CoreV1Api()
-    apps = client.AppsV1Api()
 
     create_namespace_if_needed(k8s_core, namespace)
 
@@ -317,7 +314,7 @@ def run_tests(namespace: str = typer.Option('cilium-test', help='Namespace where
     console.print(f"[green]Wrote report to {report_file}[/green]")
 
     # Show table
-    table = Table(title=f"Cilium Policy Test Results", box=box.SIMPLE_HEAVY)
+    table = Table(title="Cilium Policy Test Results", box=box.SIMPLE_HEAVY)
     table.add_column("Test")
     table.add_column("Dest")
     table.add_column("Outcome")
